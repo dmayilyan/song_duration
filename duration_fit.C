@@ -26,7 +26,6 @@ int main()
             {
                 if (i % 2 == 0)
                     arr.push_back(stod(token));
-                // cout << stod(token) << "\n";
                 i++;
             }
         }
@@ -34,30 +33,52 @@ int main()
         fin.close();
     }
 
-    TCanvas canvas = TCanvas("canvas");
     int num_count = arr.size();
 
-    TCanvas *c1 = new TCanvas("c1", "Example");
+    TCanvas *c1 = new TCanvas("c1", "All data with 1000 bins");
+    TCanvas *c2 = new TCanvas("c2", "Bckg removed");
+    c1->SetGrid();
 
-    TH1F *h1 = new TH1F("h1", "Song duration", num_count, 0, 14);
+    int bin_count = 1000;
+    TH1F *h1 = new TH1F("h1", "Song duration", bin_count, 0, 14);
 
+    // Make the histogram
     for (int i = 0; i < num_count; i++)
         h1->Fill(arr[i]);
-    TF1 *poiss = new TF1("poiss", "[0]*TMath::Poisson(x,[1]) + gaus(2)", 0, 14);
 
-    poiss->SetParLimits(0, 180, 350);
-    poiss->SetParLimits(1, 3, 7.5);
-    poiss->SetParLimits(2, 150, 200);
-    poiss->SetParLimits(3, 2, 7);
-    poiss->SetParLimits(4, 0.5, 2.);
+    TF1 *poiss = new TF1("poiss", "[0]*TMath::Poisson(x,[1])", 6, 14);
 
+    poiss->SetParLimits(0, 180, 5000);
+    poiss->SetParLimits(1, 1, 7.5);
 
+    // Let's fit the poisson to the data
     h1->Fit("poiss", "WR", "", 0, 14);
     gStyle->SetOptFit(1111);
 
-
-    // canvas.Draw();
+    c1->cd();
     h1->Draw("h");
+
+    TH1F *h1_copy = (TH1F*) h1->Clone();
+
+    TH1F *h2 = new TH1F("h2", "Song duration cut", bin_count, 0, 14);
+
+    for (int i = 0; i < bin_count; i++)
+    {
+        float x = h2->GetBinCenter(i);
+        float y = poiss->Eval(x);
+        h2->SetBinContent(i, y);
+    }
+
+    // subtract function from the hist
+
+    h1_copy->Add(h2, -1);
+
+    c2->cd();
+    c2->SetGrid();
+    h1_copy->Draw("h");
+
+    // Hmmm... After fitted function removal no clear pattern is seen.
+    // Lack of prior knowledge is not helping us in here :/
 
     return 0;
 }
