@@ -58,7 +58,7 @@ int main()
     c1->cd();
     h1->Draw("h");
 
-    TH1F *h1_copy = (TH1F*) h1->Clone();
+    TH1F *h1_copy = (TH1F *)h1->Clone();
 
     TH1F *h2 = new TH1F("h2", "Song duration cut", bin_count, 0, 14);
 
