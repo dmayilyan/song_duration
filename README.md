@@ -9,3 +9,5 @@ What was tried to fit:
 - other functions like gamma, exp, etc...
 
 The latest approach includes finding an optimal fit of a poisson distribution targeting the left side of the distribution. Removal of the poisson from the data and expectation to see a combination of known distributions.
+# Data
+Data can be found in here [millionsongdataset.com](http://millionsongdataset.com/sites/default/files/AdditionalFiles/msd_summary_file.h5)
